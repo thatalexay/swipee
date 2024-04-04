@@ -1,15 +1,12 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 library swipee;
 
 import 'package:flutter/material.dart';
 
 class Swipee extends StatefulWidget {
-  final double? height;
-  final double? width;
-  final double? trackWidth;
-  final double? trackHeight;
+  final double width;
+  final double height;
+  final double trackWidth;
+  final double trackHeight;
   final double? buttonWidth;
   final double? buttonHeight;
   final String? label;
@@ -22,23 +19,26 @@ class Swipee extends StatefulWidget {
   final Axis? axis;
   final Function? onSwipe;
   final int? elevation;
+  final double radius;
   const Swipee(
-      {this.width = double.infinity,
-      this.height = 30,
-      this.elevation,
-      this.trackWidth,
-      this.trackHeight,
+      {this.width = 200,
+      this.height = 50,
+      this.trackWidth = 200,
+      this.trackHeight = 50,
       this.label,
       this.child,
       this.buttonWidth,
       this.buttonHeight,
-      this.color,
+      this.color = Colors.black,
       this.trackChild,
-      this.trackColor,
+      this.trackColor = Colors.grey,
       this.axis = Axis.horizontal,
       this.onSwipe,
+      this.radius = 50,
+      this.elevation,
       super.key})
-      : assert(label == null || child == null, "Cannot provide both label and child");
+      : assert(label == null || child == null, "Cannot provide both label and child"),
+        assert(axis == Axis.horizontal || axis == Axis.vertical, "Axis must be either horizontal or vertical");
 
   @override
   State<Swipee> createState() => _SwipeeState();
@@ -61,22 +61,13 @@ class _SwipeeState extends State<Swipee> with TickerProviderStateMixin {
 
   double getButtonWidth(BoxConstraints constraints) {
     int d = widget.axis == Axis.horizontal ? 2 : 1;
-
-    return widget.buttonWidth != null
-        ? widget.buttonWidth!
-        : widget.trackWidth != null
-            ? widget.trackWidth! / d
-            : constraints.maxWidth / d;
+    return widget.buttonWidth ?? widget.trackWidth / d;
   }
 
   double getButtonHeight(BoxConstraints constraints) {
     int d = widget.axis == Axis.vertical ? 2 : 1;
 
-    return widget.buttonHeight != null
-        ? widget.buttonHeight!
-        : widget.trackHeight != null
-            ? widget.trackHeight! / d
-            : constraints.maxHeight / d;
+    return widget.buttonHeight ?? widget.trackHeight / d;
   }
 
   void initAnimationController() {
@@ -91,11 +82,11 @@ class _SwipeeState extends State<Swipee> with TickerProviderStateMixin {
 
   Widget _buildTrack(BuildContext context, BoxConstraints constraints) {
     return Container(
-      width: widget.trackWidth ?? constraints.maxWidth,
-      height: widget.trackHeight ?? constraints.maxHeight,
+      width: widget.trackWidth,
+      height: widget.trackHeight,
       decoration: BoxDecoration(
         color: widget.trackColor,
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(widget.radius),
       ),
       child: Center(child: widget.trackChild),
     );
@@ -147,9 +138,9 @@ class _SwipeeState extends State<Swipee> with TickerProviderStateMixin {
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       color: widget.color,
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius: BorderRadius.circular(widget.radius),
                     ),
-                    child: Center(child: widget.child ?? const Text("SWIPE", style: TextStyle(color: Colors.white))),
+                    child: Center(child: widget.child ?? Text(widget.label ?? "SWIPE", style: TextStyle(color: Colors.white))),
                   )));
         });
   }
@@ -160,9 +151,13 @@ class _SwipeeState extends State<Swipee> with TickerProviderStateMixin {
         width: widget.width,
         height: widget.height,
         child: LayoutBuilder(builder: (context, constraints) {
+          // center button according to size of widget
+          double buttonX = widget.axis == Axis.horizontal ? 0 : (widget.width - getButtonWidth(constraints)) / 2;
+          double buttonY = widget.axis == Axis.vertical ? 0 : (widget.height - getButtonHeight(constraints)) / 2;
+
           return Stack(children: [
-            _buildTrack(context, constraints),
-            _buildButton(context, constraints),
+            Center(child: _buildTrack(context, constraints)),
+            Positioned(top: buttonY, left: buttonX, child: _buildButton(context, constraints)),
           ]);
         }));
   }

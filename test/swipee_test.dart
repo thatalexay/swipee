@@ -1,3 +1,3 @@
-import 'package:swipee/swipee.dart';
+//import 'package:swipee/swipee.dart';
 
 void main() {}

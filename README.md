@@ -6,7 +6,7 @@
  Customizable Swipe Button for flutter
 
 ## Screenshots
-
+![](screenshots/screenshot.png)
 
 
 ## How to use

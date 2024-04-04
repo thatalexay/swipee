@@ -70,12 +70,14 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Text('SWIPEE:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
+            // basic usage
             Swipee(
                 label: "Swipe Me",
                 onSwipe: () {
                   EasyLoading.showSuccess('Swiped!');
                 }),
             const SizedBox(height: 20),
+            // customize track and button
             Swipee(
               trackWidth: 250,
               trackHeight: 30,
@@ -90,6 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Icon(Icons.arrow_forward),
             ),
             const SizedBox(height: 20),
+            // vertical swipe
             Swipee(
               axis: Axis.vertical,
               width: 50,
